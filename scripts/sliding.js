@@ -16,15 +16,16 @@ function init(){
         if (blank==collection[i]){
             pieceArray.push([collection[i],i])
             collection[i].addEventListener("click", function() {
-                handleClick(this,0);
+                handleClick(this,buttonVal(this));
             });
         }   else    {
             pieceArray.push([collection[i],i]);
             collection[i].addEventListener("click", function() {
-                handleClick(this,1);
+                handleClick(this,buttonVal(this));
             });
         }
     }
+    scramble(100);
     // let lastPiece = pieceArray.pop()
 
     // pieceArray.push([pieceArray[pieceArray.length-1], "blank"])
@@ -43,30 +44,12 @@ function handleClick(element,type){
             saved = [];
         }   else    {
             if(type==0&&saved[1]==1){
-                let allColumns = document.querySelectorAll("span");
-                
-                let columnPress = [saved[0].closest("span")];
-                let columnBlank = [element.closest("span")];
-                for(var i = 0; i < allColumns.length; i++) {
-                    if(allColumns[i]==columnPress[0]){
-                        columnPress.push(i);
-                    }
-                    if(allColumns[i]==columnBlank[0]){
-                        columnBlank.push(i);
-                    }
-                }
-                let childrenPress = columnPress[0].children;
-                let childrenBlank = columnBlank[0].children;
-                for(var i = 0; i < childrenPress.length; i++) {
-                    if(childrenPress[i]==saved[0]){
-                        columnPress.push(i);
-                    }
-                }
-                for(var i = 0; i < childrenBlank.length; i++) {
-                    if(childrenBlank[i]==element){
-                        columnBlank.push(i);
-                    }
-                }
+
+                let sortedArray = pieceSorter(saved[0],element)
+                let columnBlank = sortedArray[0]
+                let columnPress = sortedArray[1]
+                let childrenBlank = sortedArray[2]
+                let childrenPress = sortedArray[3]
                 if(Math.abs(columnPress[1]-columnBlank[1])==1
                 &&Math.abs(columnPress[2]-columnBlank[2])==0){
                     let temp = saved[0].outerHTML
@@ -120,10 +103,82 @@ function calcPos(col,row){
     let numOfRows = allColumns[0].querySelectorAll("div").length;
     return col*numOfRows+row;
 }
+function scramble(times){
+    for(let i = 0; i < times; i++){
 
+        let randElementArr = toArray(document.querySelectorAll("div"));
+        let rand1 = Math.ceil(Math.random()*randElementArr.length-1);
+        let el1 = randElementArr[rand1];
+        randElementArr.splice(rand1, 1);
+        let rand2 = Math.ceil(Math.random()*randElementArr.length-1);
+        let el2 = randElementArr[rand2];
+        // console.log(randElementArr)
+        let sortedArray = pieceSorter(el2,el1);
+        let columnBlank = sortedArray[0];
+        let columnPress = sortedArray[1];
+        let childrenBlank = sortedArray[2];
+        let childrenPress = sortedArray[3];
+
+        let temp = el1.outerHTML;
+        el1.outerHTML = el2.outerHTML;
+        el1 = childrenPress[columnPress[2]];
+
+        el1.addEventListener("click", function() {
+            handleClick(this,buttonVal(this));
+        });
+        el2.outerHTML = temp;
+        el2 = childrenBlank[columnBlank[2]];
+        el2.addEventListener("click", function() {
+            handleClick(this,buttonVal(this));
+        });
+
+        swapElements(pieceArray,calcPos(columnPress[1],columnPress[2]),calcPos(columnBlank[1],columnBlank[2]));
+    }
+}
+function buttonVal(element){
+    if(element.id != "blank"){
+        return 1;
+    }   else    {
+        return 0;
+    }
+}
+function pieceSorter(el1,el2){
+    let allColumns = document.querySelectorAll("span");
+                
+    let columnPress = [el1.closest("span")];
+    let columnBlank = [el2.closest("span")];
+    for(var i = 0; i < allColumns.length; i++) {
+        if(allColumns[i]==columnPress[0]){
+            columnPress.push(i);
+        }
+        if(allColumns[i]==columnBlank[0]){
+            columnBlank.push(i);
+        }
+    }
+    let childrenPress = columnPress[0].children;
+    let childrenBlank = columnBlank[0].children;
+    for(var i = 0; i < childrenPress.length; i++) {
+        if(childrenPress[i]==el1){
+            columnPress.push(i);
+        }
+    }
+    for(var i = 0; i < childrenBlank.length; i++) {
+        if(childrenBlank[i]==el2){
+            columnBlank.push(i);
+        }
+    }
+    return [columnBlank,columnPress,childrenBlank,childrenPress];
+}
 //https://www.freecodecamp.org/news/swap-two-array-elements-in-javascript/
 const swapElements = (array, index1, index2) => {
     let temp = array[index1];
     array[index1] = array[index2];
     array[index2] = temp;
 };
+function toArray(arr){
+    let newArr = [];
+    for ( var i = 0, l = arr.length; i < l; i++ ){
+        newArr.push(arr[i])
+    }
+    return newArr;
+}
