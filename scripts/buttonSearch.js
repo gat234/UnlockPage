@@ -1,27 +1,28 @@
-let buttonPossX = 0;
-let buttonPosY = 0;
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-let stopGame = false;
+
 onmousemove = function(e){
-    let r = document.getElementById("cropper");
-    let image = document.getElementById("button1");
-    let width = r.offsetWidth;
-    let height = r.offsetHeight;
-    r.style.top = Math.ceil(e.clientY-(height/2))+"px";
-    r.style.left = Math.ceil(e.clientX-(width/2))+"px";
-    image.style.top = ((Math.ceil(e.clientY-(height/2))*-1)+buttonPosY)+"px";
-    image.style.left = ((Math.ceil(e.clientX-(width/2))*-1)+buttonPossX)+"px";
-    mouseX = e.clientX;
-    mouseY = e.clientY;
+    if(!stopGame){
+        let r = document.getElementById("cropper");
+        let image = document.getElementById("button1");
+        let width = r.offsetWidth;
+        let height = r.offsetHeight;
+        r.style.top = Math.ceil(e.clientY-(height/2))+"px";
+        r.style.left = Math.ceil(e.clientX-(width/2))+"px";
+        image.style.top = ((Math.ceil(e.clientY-(height/2))*-1)+buttonPosY)+"px";
+        image.style.left = ((Math.ceil(e.clientX-(width/2))*-1)+buttonPosX)+"px";
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    }
 }
 function startGame(){
     let docWidth = document.body.offsetWidth;
     let docHeight = document.body.scrollHeight;
     let image = document.getElementById("button1");
     image.style.backgroundImage = "url(images/light-off.png)";
-    buttonPossX = Math.abs(Math.ceil(Math.random()*docWidth)-68);
+    buttonPosX = Math.abs(Math.ceil(Math.random()*docWidth)-68);
     buttonPosY = Math.abs(Math.ceil(Math.random()*docHeight)-114);
     image.addEventListener("click", function() {
         //nestrada sobrid
@@ -46,10 +47,11 @@ async function increaseLight(){
         if (stopGame){
             let r = document.getElementById("cropper");
             let page = document.getElementById("webpage");
-            let image = document.getElementById("button1");;
-            image.style.backgroundImage = "url(images/light-on.png)";
-            r.style.visibility='hidden';
+            r.remove()
             page.style.visibility = 'visible';
+
+            document.body.classList.remove("body")
+            document.body.appendChild(image)
             return;
         }
     }

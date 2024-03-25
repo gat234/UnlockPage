@@ -1,6 +1,7 @@
 :root{
-    --widthy: 10px;
-    --heighty: 10px;
+    --widthy: 50px;
+    --heighty: 50px;
+    --colory: rgb(0, 0, 0);
 }
 #cropper{
     width:var(--widthy);
@@ -26,11 +27,11 @@
     background-repeat: no-repeat;
     background-size: 68px 114px;
     /* background-color: white; */
-    z-index: -1;
+    z-index: 1;
     /* background-image: url("https://media.istockphoto.com/id/1345876096/vector/halloween-night-background-scary-cemetery-and-full-moon-vector-banner.jpg?s=612x612&w=0&k=20&c=F9dCbuHEzjn1u6_ZBGlFmGqR6c-62NluzQttFASClmc="); */
 }
-body{
-    background: black;
+.body {
+    background: var(--colory) !important;
     overflow-y: hidden;
     overflow-x: hidden;
 }
