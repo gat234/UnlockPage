@@ -1,4 +1,4 @@
-
+//https://www.sitepoint.com/delay-sleep-pause-wait/
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -25,9 +25,7 @@ function startGame(){
     buttonPosX = Math.abs(Math.ceil(Math.random()*docWidth)-68);
     buttonPosY = Math.abs(Math.ceil(Math.random()*docHeight)-114);
     image.addEventListener("click", function() {
-        //nestrada sobrid
         stopGame = true;
-        console.log("a")
     });
 }
 async function increaseLight(){
@@ -47,9 +45,13 @@ async function increaseLight(){
         if (stopGame){
             let r = document.getElementById("cropper");
             let page = document.getElementById("webpage");
+            let button2 = document.getElementById("nextPage");
+            button2.addEventListener("click", function() {
+                window.location.href = "sliding.html";
+            });
             r.remove()
             page.style.visibility = 'visible';
-
+            page.style.position = "static";
             document.body.classList.remove("body")
             document.body.appendChild(image)
             return;
