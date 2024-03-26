@@ -7,11 +7,10 @@
     margin: 10px;
     padding: 20px;
     font-size: 30px;
-    width: 50%;
+    width: 90%;
 }
 .pressed{
     opacity: 0.4;
-    width: 60%;
-
+    width: 100%;
 }
 

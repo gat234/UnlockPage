@@ -9,26 +9,60 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 let pieceArray = [];
+let handler = function(){handleClick(this,buttonVal(this));}
+let imgHeight,imgWidth
 function init(){
     let collection = document.getElementsByClassName("sliding");
     let blank = document.getElementById("blank");
+    
     for ( var i = 0, l = collection.length; i < l; i++ ){
         if (blank==collection[i]){
             pieceArray.push([collection[i],i])
-            collection[i].addEventListener("click", function() {
-                handleClick(this,buttonVal(this));
-            });
+            collection[i].addEventListener("click", handler);
         }   else    {
             pieceArray.push([collection[i],i]);
-            collection[i].addEventListener("click", function() {
-                handleClick(this,buttonVal(this));
-            });
+            collection[i].addEventListener("click", handler);
         }
     }
-    scramble(100);
-    // let lastPiece = pieceArray.pop()
 
-    // pieceArray.push([pieceArray[pieceArray.length-1], "blank"])
+    const img = new Image();
+
+    img.onload = function() {
+        imgWidth = this.width
+        imgHeight = this.height
+        splitImage(Number(imgWidth),Number(imgHeight))
+    }
+    img.src = '../images/sliding-image.png';
+    console.log(imgWidth,imgHeight)
+    
+}
+function splitImage(width,height){
+    let allColumns = document.querySelectorAll("span");
+    let numOfRows = allColumns[0].querySelectorAll("div").length;
+    let numOfColumns = allColumns.length;
+    let collection = document.getElementsByClassName("sliding");
+    let ratio = width/height
+    console.log(ratio>1.33,ratio<1.3333334,ratio)
+    if(ratio>1.33&&ratio<1.3333334){
+        while(numOfRows<4){
+            for(var i = 0; i < allColumns.length; i++) {
+                allColumns[i].innerHTML = allColumns[i].innerHTML + `<div class="sliding">Image4</div>`
+            }
+            numOfRows++
+        }
+        while(numOfColumns<3){
+            document.body.innerHTML = document.body.innerHTML + `
+            <span class="flex-container">
+                <div class="sliding">Image4</div>
+                <div class="sliding">Image8</div>
+                <div class="sliding">Image3</div>
+            </span>`
+            numOfColumns++
+            // break;
+        }
+        scramble(10);
+        return
+    }
 }
 let saved = [];
 function handleClick(element,type){
@@ -76,8 +110,9 @@ function handleClick(element,type){
                     element.outerHTML = temp
                     element = childrenBlank[columnBlank[2]]
                     element.addEventListener("click", function() {
-                        handleClick(this,1);
+                        handleClick(this,buttonVal(this));
                     });
+                    
                     swapElements(pieceArray,calcPos(columnPress[1],columnPress[2]),calcPos(columnBlank[1],columnBlank[2]));
                 }
                 // console.log(saved[0])
@@ -98,6 +133,7 @@ function handleClick(element,type){
     }
     console.log(sorted)
 }
+
 function calcPos(col,row){
     let allColumns = document.querySelectorAll("span");
     let numOfRows = allColumns[0].querySelectorAll("div").length;
@@ -122,16 +158,16 @@ function scramble(times){
         let temp = el1.outerHTML;
         el1.outerHTML = el2.outerHTML;
         el1 = childrenPress[columnPress[2]];
-
-        el1.addEventListener("click", function() {
-            handleClick(this,buttonVal(this));
-        });
         el2.outerHTML = temp;
         el2 = childrenBlank[columnBlank[2]];
-        el2.addEventListener("click", function() {
-            handleClick(this,buttonVal(this));
-        });
-
+        let collection = document.getElementsByClassName("sliding");
+        for ( var c = 0, l = collection.length; c < l; c++ ){
+            collection[c].removeEventListener("click",handler);
+            collection[c].addEventListener("click",handler);
+            // collection[c].addEventListener("click", function() {
+            //     handleClick(this,buttonVal(this));
+            // });
+        }
         swapElements(pieceArray,calcPos(columnPress[1],columnPress[2]),calcPos(columnBlank[1],columnBlank[2]));
     }
 }
