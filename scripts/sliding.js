@@ -12,18 +12,6 @@ let pieceArray = [];
 let handler = function(){handleClick(this,buttonVal(this));}
 let imgHeight,imgWidth
 function init(){
-    let collection = document.getElementsByClassName("sliding");
-    let blank = document.getElementById("blank");
-    
-    for ( var i = 0, l = collection.length; i < l; i++ ){
-        if (blank==collection[i]){
-            pieceArray.push([collection[i],i])
-            collection[i].addEventListener("click", handler);
-        }   else    {
-            pieceArray.push([collection[i],i]);
-            collection[i].addEventListener("click", handler);
-        }
-    }
 
     const img = new Image();
 
@@ -32,41 +20,69 @@ function init(){
         imgHeight = this.height
         splitImage(Number(imgWidth),Number(imgHeight))
     }
-    img.src = '../images/sliding-image.png';
+    img.src = `../images/sliding-image${Math.ceil(Math.random()*2)}.png`;
+    var r = document.querySelector(':root');
+    r.style.setProperty('--url',`url(${img.src})`);
     console.log(imgWidth,imgHeight)
     
 }
 function splitImage(width,height){
-    let allColumns = document.querySelectorAll("span");
-    let numOfRows = allColumns[0].querySelectorAll("div").length;
-    let numOfColumns = allColumns.length;
-    let collection = document.getElementsByClassName("sliding");
     let ratio = width/height
-    console.log(ratio>1.33,ratio<1.3333334,ratio)
-    if(ratio>1.33&&ratio<1.3333334){
-        while(numOfRows<4){
-            for(var i = 0; i < allColumns.length; i++) {
-                allColumns[i].innerHTML = allColumns[i].innerHTML + `<div class="sliding">Image4</div>`
-            }
-            numOfRows++
-        }
-        while(numOfColumns<3){
-            document.body.innerHTML = document.body.innerHTML + `
-            <span class="flex-container">
-                <div class="sliding">Image4</div>
-                <div class="sliding">Image8</div>
-                <div class="sliding">Image3</div>
-            </span>`
-            numOfColumns++
-            // break;
-        }
-        scramble(10);
-        return
+    console.log(ratio>1.33,ratio<1.3333334,ratio*3)
+    let flexContainerStr = `<span class="flex-container"></span>`
+    let collumns,rows
+    if(ratio*3==4){
+        collumns = 4
+        rows = 3
     }
+    if(ratio*9==16){
+        collumns = 16
+        rows = 9
+    }
+    let multW = rows/10
+    let multH = collumns/10
+    let imgWidth = (width/rows)*multW
+    let imgHeight = (height/collumns)*multH
+    var r = document.querySelector(':root');
+    r.style.setProperty('--w',`${imgWidth}px`);
+    r.style.setProperty('--h',`${imgHeight}px`);
+    r.style.setProperty('--wbg',`${collumns}00%`);
+    r.style.setProperty('--hbg',`${rows}00%`);
+    for(var i = 0; i < rows; i++){
+        let puzzle = document.getElementById("puzzle")
+        flexContainerStr = '<span class="flex-container"></span>'
+        for(var x = 0; x < collumns; x++) {
+            let lastDiv = flexContainerStr.lastIndexOf("</div>")
+            
+            lastDiv = lastDiv + 6
+            if(lastDiv!=5){
+                if(i==rows-1&&x==collumns-1){
+                    flexContainerStr = flexContainerStr.slice(0,lastDiv) + `<div class="sliding" id="blank" style="background-position:${((width/rows)*x)*-multW}px ${((height/collumns)*i)*-multH}px;"></div>` + flexContainerStr.slice(lastDiv)
+                }else{
+                    flexContainerStr = flexContainerStr.slice(0,lastDiv) + `<div class="sliding" style="background-position:${((width/rows)*x)*-multW}px ${((height/collumns)*i)*-multH}px;"></div>` + flexContainerStr.slice(lastDiv)
+                }
+            }   else    {
+                flexContainerStr = flexContainerStr.slice(0,29) + `<div class="sliding" style="background-position:${((width/rows)*x)*-multW}px ${((height/collumns)*i)*-multH}px;"></div>` + flexContainerStr.slice(29)
+            }
+        }
+        puzzle.innerHTML = puzzle.innerHTML + flexContainerStr
+    }
+    let collection = document.getElementsByClassName("sliding");
+    for ( var i = 0, l = collection.length; i < l; i++ ){
+        pieceArray.push([collection[i],i]);
+    }
+    for ( var c = 0, l = collection.length; c < l; c++ ){
+        collection[c].removeEventListener("click",handler);
+        collection[c].addEventListener("click",handler);
+    }
+    scramble(100);
 }
+
+//Handle clicking (tbd)
 let saved = [];
 function handleClick(element,type){
-    console.log([element,type],saved)
+
+    // console.log([element,type],saved)
     if(saved.length!=2){
         if(type==1){
             element.classList.add("pressed");
@@ -86,32 +102,20 @@ function handleClick(element,type){
                 let childrenPress = sortedArray[3]
                 if(Math.abs(columnPress[1]-columnBlank[1])==1
                 &&Math.abs(columnPress[2]-columnBlank[2])==0){
-                    let temp = saved[0].outerHTML
-                    saved[0].outerHTML = '<div class="sliding" id="blank">BlankSpace</div>'
-                    saved[0] = childrenPress[columnPress[2]]
-                    saved[0].addEventListener("click", function() {
-                        handleClick(this,0);
-                    });
-                    element.outerHTML = temp
-                    element = childrenBlank[columnBlank[2]]
-                    element.addEventListener("click", function() {
-                        handleClick(this,1);
-                    });
+                    let temp = saved[0].outerHTML;
+                    saved[0].outerHTML = element.outerHTML;
+                    saved[0] = childrenPress[columnPress[2]];
+                    element.outerHTML = temp;
+                    element = childrenBlank[columnBlank[2]];
                     swapElements(pieceArray,calcPos(columnPress[1],columnPress[2]),calcPos(columnBlank[1],columnBlank[2]));
                 }
                 if(Math.abs(columnPress[1]-columnBlank[1])==0
                 &&Math.abs(columnPress[2]-columnBlank[2])==1){
-                    let temp = saved[0].outerHTML
-                    saved[0].outerHTML = '<div class="sliding" id="blank">BlankSpace</div>'
-                    saved[0] = childrenPress[columnPress[2]]
-                    saved[0].addEventListener("click", function() {
-                        handleClick(this,0);
-                    });
-                    element.outerHTML = temp
-                    element = childrenBlank[columnBlank[2]]
-                    element.addEventListener("click", function() {
-                        handleClick(this,buttonVal(this));
-                    });
+                    let temp = saved[0].outerHTML;
+                    saved[0].outerHTML = element.outerHTML;
+                    saved[0] = childrenPress[columnPress[2]];
+                    element.outerHTML = temp;
+                    element = childrenBlank[columnBlank[2]];
                     
                     swapElements(pieceArray,calcPos(columnPress[1],columnPress[2]),calcPos(columnBlank[1],columnBlank[2]));
                 }
@@ -126,19 +130,27 @@ function handleClick(element,type){
     }
     let sorted = true;
     for (let i = 0; i < pieceArray.length - 1; i++) {
-        if (pieceArray[i] > pieceArray[i+1]) {
+        if (pieceArray[i][1] > pieceArray[i+1][1]) {
             sorted = false;
             break;
         }
     }
+    let collection = document.getElementsByClassName("sliding");
+    for ( var c = 0, l = collection.length; c < l; c++ ){
+        collection[c].removeEventListener("click",handler);
+        collection[c].addEventListener("click",handler);
+    }
     console.log(sorted)
 }
 
+//Calculate the precise positions
 function calcPos(col,row){
     let allColumns = document.querySelectorAll("span");
     let numOfRows = allColumns[0].querySelectorAll("div").length;
     return col*numOfRows+row;
 }
+
+//Used to give the ability to scramble the pieces
 function scramble(times){
     for(let i = 0; i < times; i++){
 
@@ -148,7 +160,6 @@ function scramble(times){
         randElementArr.splice(rand1, 1);
         let rand2 = Math.ceil(Math.random()*randElementArr.length-1);
         let el2 = randElementArr[rand2];
-        // console.log(randElementArr)
         let sortedArray = pieceSorter(el2,el1);
         let columnBlank = sortedArray[0];
         let columnPress = sortedArray[1];
@@ -164,9 +175,6 @@ function scramble(times){
         for ( var c = 0, l = collection.length; c < l; c++ ){
             collection[c].removeEventListener("click",handler);
             collection[c].addEventListener("click",handler);
-            // collection[c].addEventListener("click", function() {
-            //     handleClick(this,buttonVal(this));
-            // });
         }
         swapElements(pieceArray,calcPos(columnPress[1],columnPress[2]),calcPos(columnBlank[1],columnBlank[2]));
     }
@@ -178,6 +186,8 @@ function buttonVal(element){
         return 0;
     }
 }
+
+//Used to get the precise positions in columns and children
 function pieceSorter(el1,el2){
     let allColumns = document.querySelectorAll("span");
                 
@@ -192,6 +202,7 @@ function pieceSorter(el1,el2){
         }
     }
     let childrenPress = columnPress[0].children;
+
     let childrenBlank = columnBlank[0].children;
     for(var i = 0; i < childrenPress.length; i++) {
         if(childrenPress[i]==el1){

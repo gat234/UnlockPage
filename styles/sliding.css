@@ -2,15 +2,29 @@
     display: flex;
     background-color: DodgerBlue;
 }
+:root{
+    --w: 100px;
+    --h: 100px;
+    --wbg: 400%;
+    --hbg: 300%;
+    --url: url(../images/sliding-image1.png)
+}
 .sliding {
     background-color: #f1f1f1;
     margin: 10px;
-    padding: 20px;
     font-size: 30px;
-    width: 90%;
+    width: var(--w);
+    height: var(--h);
+    background-image: var(--url);
+    background-repeat: no-repeat;
+    background-size:var(--wbg) var(--hbg);
+}
+#blank{
+    opacity: 0.2;
 }
 .pressed{
     opacity: 0.4;
-    width: 100%;
+    width: calc(var(--w) * 1.1);
+    height: calc(var(--h) * 1.1);
 }
 
