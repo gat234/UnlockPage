@@ -1,13 +1,16 @@
 .flex-container {
     display: flex;
-    background-color: DodgerBlue;
+    /* background-color: DodgerBlue; */
 }
 :root{
     --w: 100px;
     --h: 100px;
     --wbg: 400%;
     --hbg: 300%;
-    --url: url(../images/sliding-image1.png)
+    --url: url(../images/sliding-image1.png);
+    --bord: 0px;
+    --t: 45vh;
+    --l: 29vw;
 }
 .sliding {
     background-color: #f1f1f1;
@@ -19,12 +22,42 @@
     background-repeat: no-repeat;
     background-size:var(--wbg) var(--hbg);
 }
+.preview{
+    background-image: var(--url);
+    margin: 0;
+    position: fixed;
+    top: var(--t);
+    left: var(--l);
+    width: 300px;
+    height: 200px;
+    border: var(--bord);
+    background-size: 300px 200px;
+}
+
+p:hover{
+    width: 375px;
+    height: 250px;
+    background-size: 375px 250px;
+    border: 6px solid rgb(43, 46, 226);
+}
 #blank{
     opacity: 0.2;
 }
 .pressed{
-    opacity: 0.4;
-    width: calc(var(--w) * 1.1);
-    height: calc(var(--h) * 1.1);
+    opacity: 0.7;
+    border: 6px solid rgb(138, 0, 69);
+    /* background: rgba(187, 48, 48, 0.233); */
+}
+
+body{
+    background: rgb(255, 168, 168) !important;
+}
+.puzzle {
+    position: relative;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 

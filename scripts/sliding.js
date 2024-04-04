@@ -18,27 +18,24 @@ function init(){
     img.onload = function() {
         imgWidth = this.width
         imgHeight = this.height
-        splitImage(Number(imgWidth),Number(imgHeight))
+        if(imgHeight!=undefined&&imgWidth!=undefined){
+            splitImage(Number(imgWidth),Number(imgHeight))
+        }   else    {
+            let puzzlie = document.getElementById("txt")
+            puzzlie.innerHTML = `Error`
+        }
     }
-    img.src = `../images/sliding-image${Math.ceil(Math.random()*2)}.png`;
+    // img.src = `../images/sliding-image${Math.ceil(Math.random()*2)}.png`;
+    img.src = `https://picsum.photos/3000/2000`;
     var r = document.querySelector(':root');
     r.style.setProperty('--url',`url(${img.src})`);
-    console.log(imgWidth,imgHeight)
-    
 }
 function splitImage(width,height){
-    let ratio = width/height
-    console.log(ratio>1.33,ratio<1.3333334,ratio*3)
+    // let ratio = width/height
     let flexContainerStr = `<span class="flex-container"></span>`
     let collumns,rows
-    if(ratio*3==4){
-        collumns = 4
-        rows = 3
-    }
-    if(ratio*9==16){
-        collumns = 16
-        rows = 9
-    }
+    collumns = Math.round(Math.random())+3
+    rows = Math.round(Math.random())+2
     let multW = rows/10
     let multH = collumns/10
     let imgWidth = (width/rows)*multW
@@ -75,14 +72,22 @@ function splitImage(width,height){
         collection[c].removeEventListener("click",handler);
         collection[c].addEventListener("click",handler);
     }
-    scramble(100);
+    scramble(Math.ceil(Math.random()*1));
+    calcRemaining();
+    var r = document.querySelector(':root');
+    r.style.setProperty('--bord','6px solid blueviolet');
+    moveImage()
+    if (Incorrect==0){
+        scramble(Math.ceil(Math.random()*3));
+        calcRemaining();
+    }
+
 }
 
-//Handle clicking (tbd)
 let saved = [];
+let Incorrect = 0;
 function handleClick(element,type){
 
-    // console.log([element,type],saved)
     if(saved.length!=2){
         if(type==1){
             element.classList.add("pressed");
@@ -91,15 +96,16 @@ function handleClick(element,type){
     }   else    {
         if(saved[0]==element){
             element.classList.remove("pressed");
+            saved[0].classList.remove("pressed");
             saved = [];
         }   else    {
             if(type==0&&saved[1]==1){
 
-                let sortedArray = pieceSorter(saved[0],element)
-                let columnBlank = sortedArray[0]
-                let columnPress = sortedArray[1]
-                let childrenBlank = sortedArray[2]
-                let childrenPress = sortedArray[3]
+                let sortedArray = pieceSorter(saved[0],element);
+                let columnBlank = sortedArray[0];
+                let columnPress = sortedArray[1];
+                let childrenBlank = sortedArray[2];
+                let childrenPress = sortedArray[3];
                 if(Math.abs(columnPress[1]-columnBlank[1])==1
                 &&Math.abs(columnPress[2]-columnBlank[2])==0){
                     let temp = saved[0].outerHTML;
@@ -121,28 +127,36 @@ function handleClick(element,type){
                 }
                 // console.log(saved[0])
                 element.classList.remove("pressed");
+                saved[0].classList.remove("pressed");
                 saved=[];
             }   else    {
+
                 element.classList.remove("pressed");
+                saved[0].classList.remove("pressed");
                 saved=[];
             }
         }
     }
-    let sorted = true;
-    for (let i = 0; i < pieceArray.length - 1; i++) {
-        if (pieceArray[i][1] > pieceArray[i+1][1]) {
-            sorted = false;
-            break;
-        }
-    }
+    calcRemaining();
+    if(Incorrect==0){}
     let collection = document.getElementsByClassName("sliding");
     for ( var c = 0, l = collection.length; c < l; c++ ){
         collection[c].removeEventListener("click",handler);
         collection[c].addEventListener("click",handler);
     }
-    console.log(sorted)
-}
 
+}
+function calcRemaining(){
+    Incorrect = 0;
+    for (let i = 0; i < pieceArray.length - 1; i++) {
+        console.log(pieceArray[i][1],pieceArray[i+1][1]-1)
+        if (pieceArray[i][1] != pieceArray[i+1][1]-1) {
+            Incorrect++;
+        }
+    }
+    let puzzlie = document.getElementById("txt");
+    puzzlie.innerHTML = `Remaining: ${Incorrect}`;
+}
 //Calculate the precise positions
 function calcPos(col,row){
     let allColumns = document.querySelectorAll("span");
@@ -161,22 +175,25 @@ function scramble(times){
         let rand2 = Math.ceil(Math.random()*randElementArr.length-1);
         let el2 = randElementArr[rand2];
         let sortedArray = pieceSorter(el2,el1);
-        let columnBlank = sortedArray[0];
-        let columnPress = sortedArray[1];
-        let childrenBlank = sortedArray[2];
-        let childrenPress = sortedArray[3];
-
-        let temp = el1.outerHTML;
-        el1.outerHTML = el2.outerHTML;
-        el1 = childrenPress[columnPress[2]];
-        el2.outerHTML = temp;
-        el2 = childrenBlank[columnBlank[2]];
-        let collection = document.getElementsByClassName("sliding");
-        for ( var c = 0, l = collection.length; c < l; c++ ){
-            collection[c].removeEventListener("click",handler);
-            collection[c].addEventListener("click",handler);
+        if(sortedArray!="disable"){
+            let columnBlank = sortedArray[0];
+            let columnPress = sortedArray[1];
+            let childrenBlank = sortedArray[2];
+            let childrenPress = sortedArray[3];
+    
+            let temp = el1.outerHTML;
+            el1.outerHTML = el2.outerHTML;
+            el1 = childrenPress[columnPress[2]];
+            el2.outerHTML = temp;
+            el2 = childrenBlank[columnBlank[2]];
+            let collection = document.getElementsByClassName("sliding");
+            for ( var c = 0, l = collection.length; c < l; c++ ){
+                collection[c].removeEventListener("click",handler);
+                collection[c].addEventListener("click",handler);
+            }
+            swapElements(pieceArray,calcPos(columnPress[1],columnPress[2]),calcPos(columnBlank[1],columnBlank[2]));
         }
-        swapElements(pieceArray,calcPos(columnPress[1],columnPress[2]),calcPos(columnBlank[1],columnBlank[2]));
+
     }
 }
 function buttonVal(element){
@@ -189,6 +206,7 @@ function buttonVal(element){
 
 //Used to get the precise positions in columns and children
 function pieceSorter(el1,el2){
+    if(el1.id=="ignore" || el2.id=="ignore"){return "disable";}
     let allColumns = document.querySelectorAll("span");
                 
     let columnPress = [el1.closest("span")];
@@ -225,7 +243,41 @@ const swapElements = (array, index1, index2) => {
 function toArray(arr){
     let newArr = [];
     for ( var i = 0, l = arr.length; i < l; i++ ){
-        newArr.push(arr[i])
+        newArr.push(arr[i]);
     }
     return newArr;
+}
+let imgBool = false;
+let mousePressed = false;
+async function moveImage(){
+    while(true){
+        await sleep(50);
+        let element = document.getElementsByClassName("preview")[0]
+        // console.log(element.matches(":hover"))
+        if(element.matches(":hover")){
+            imgBool = true;
+        }   else    {
+            imgBool = false;
+        }
+    }
+
+}
+onmousedown = function() { 
+    mousePressed = true;
+}
+onmouseup = function() {
+    mousePressed = false;
+}
+onmousemove = function(e){
+    let element = document.getElementsByClassName("preview")[0]
+    if (mousePressed&&imgBool){
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        let width = element.offsetWidth
+        let height = element.offsetHeight
+        
+        element.style.top = Math.ceil(e.clientY-height/2)+"px";
+        element.style.left = Math.ceil(e.clientX-width/2)+"px";
+    }
 }
