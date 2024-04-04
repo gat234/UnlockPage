@@ -274,8 +274,8 @@ onmousemove = function(e){
         mouseX = e.clientX;
         mouseY = e.clientY;
 
-        let width = element.offsetWidth
-        let height = element.offsetHeight
+        let width = element.offsetWidth;
+        let height = element.offsetHeight;
         
         element.style.top = Math.ceil(e.clientY-height/2)+"px";
         element.style.left = Math.ceil(e.clientX-width/2)+"px";

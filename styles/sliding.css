@@ -45,7 +45,7 @@ p:hover{
 }
 .pressed{
     opacity: 0.7;
-    border: 6px solid rgb(138, 0, 69);
+    outline: 6px solid rgb(138, 0, 69);
     /* background: rgba(187, 48, 48, 0.233); */
 }
 
