@@ -34,7 +34,7 @@
     background-size: 300px 200px;
 }
 
-p:hover{
+article p:hover{
     width: 375px;
     height: 250px;
     background-size: 375px 250px;
@@ -49,7 +49,7 @@ p:hover{
     /* background: rgba(187, 48, 48, 0.233); */
 }
 
-body{
+.body{
     background: rgb(255, 168, 168) !important;
 }
 .puzzle {

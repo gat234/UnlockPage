@@ -25,7 +25,6 @@ function init(){
             puzzlie.innerHTML = `Error`
         }
     }
-    // img.src = `../images/sliding-image${Math.ceil(Math.random()*2)}.png`;
     img.src = `https://picsum.photos/3000/2000`;
     var r = document.querySelector(':root');
     r.style.setProperty('--url',`url(${img.src})`);
@@ -35,7 +34,7 @@ function splitImage(width,height){
     let flexContainerStr = `<span class="flex-container"></span>`
     let collumns,rows
     collumns = Math.round(Math.random())+3
-    rows = Math.round(Math.random())+2
+    rows = Math.round(Math.random())+3
     let multW = rows/10
     let multH = collumns/10
     let imgWidth = (width/rows)*multW
@@ -72,7 +71,7 @@ function splitImage(width,height){
         collection[c].removeEventListener("click",handler);
         collection[c].addEventListener("click",handler);
     }
-    scramble(Math.ceil(Math.random()*1));
+    scramble(Math.ceil(Math.random()*3));
     calcRemaining();
     var r = document.querySelector(':root');
     r.style.setProperty('--bord','6px solid blueviolet');
@@ -125,7 +124,6 @@ function handleClick(element,type){
                     
                     swapElements(pieceArray,calcPos(columnPress[1],columnPress[2]),calcPos(columnBlank[1],columnBlank[2]));
                 }
-                // console.log(saved[0])
                 element.classList.remove("pressed");
                 saved[0].classList.remove("pressed");
                 saved=[];
@@ -138,7 +136,7 @@ function handleClick(element,type){
         }
     }
     calcRemaining();
-    if(Incorrect==0){}
+
     let collection = document.getElementsByClassName("sliding");
     for ( var c = 0, l = collection.length; c < l; c++ ){
         collection[c].removeEventListener("click",handler);
@@ -148,32 +146,40 @@ function handleClick(element,type){
 }
 function calcRemaining(){
     Incorrect = 0;
-    for (let i = 0; i < pieceArray.length - 1; i++) {
-        console.log(pieceArray[i][1],pieceArray[i+1][1]-1)
-        if (pieceArray[i][1] != pieceArray[i+1][1]-1) {
+    for (let i = 0; i < pieceArray.length; i++) {
+        if (pieceArray[i][1] != i) {
             Incorrect++;
         }
     }
     let puzzlie = document.getElementById("txt");
     puzzlie.innerHTML = `Remaining: ${Incorrect}`;
+    if(Incorrect==0){
+        let r = document.getElementById("remove");
+        let page = document.getElementById("webpage");
+        r.remove()
+        page.style.visibility = 'visible';
+        page.style.position = "static";
+        document.body.classList.remove("body");
+    }
 }
 //Calculate the precise positions
 function calcPos(col,row){
     let allColumns = document.querySelectorAll("span");
-    let numOfRows = allColumns[0].querySelectorAll("div").length;
+    
+    let numOfRows = allColumns[0].getElementsByClassName("sliding").length;
     return col*numOfRows+row;
 }
 
 //Used to give the ability to scramble the pieces
 function scramble(times){
     for(let i = 0; i < times; i++){
-
-        let randElementArr = toArray(document.querySelectorAll("div"));
+        let randElementArr = toArray(document.getElementsByClassName("sliding"))
         let rand1 = Math.ceil(Math.random()*randElementArr.length-1);
         let el1 = randElementArr[rand1];
         randElementArr.splice(rand1, 1);
         let rand2 = Math.ceil(Math.random()*randElementArr.length-1);
         let el2 = randElementArr[rand2];
+        
         let sortedArray = pieceSorter(el2,el1);
         if(sortedArray!="disable"){
             let columnBlank = sortedArray[0];
@@ -253,7 +259,6 @@ async function moveImage(){
     while(true){
         await sleep(50);
         let element = document.getElementsByClassName("preview")[0]
-        // console.log(element.matches(":hover"))
         if(element.matches(":hover")){
             imgBool = true;
         }   else    {
