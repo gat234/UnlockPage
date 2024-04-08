@@ -25,6 +25,9 @@ function startGame(){
     buttonPosX = Math.abs(Math.ceil(Math.random()*docWidth)-68);
     buttonPosY = Math.abs(Math.ceil(Math.random()*docHeight)-114);
     image.addEventListener("click", function() {
+        var audio = new Audio("./sounds/85127__wrylytucker__turning-lightswitch.wav");
+        audio.play();
+        audio.remove();
         stopGame = true;
     });
 }

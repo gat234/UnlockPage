@@ -9,7 +9,9 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 let pieceArray = [];
-let handler = function(){handleClick(this,buttonVal(this));}
+let handler = function(){
+    handleClick(this,buttonVal(this));
+}
 let imgHeight,imgWidth
 function init(){
 
@@ -127,6 +129,9 @@ function handleClick(element,type){
                 element.classList.remove("pressed");
                 saved[0].classList.remove("pressed");
                 saved=[];
+                var audio = new Audio("./sounds/323417__sethroph__glass-slide-7.wav");
+                audio.play();
+                audio.remove();
             }   else    {
 
                 element.classList.remove("pressed");
