@@ -1,7 +1,10 @@
 //https://stackoverflow.com/questions/1033398/how-to-execute-a-function-when-page-has-fully-loaded
+let d,requested
 document.onreadystatechange = function () {
     if (document.readyState == "complete") {
       init();
+      d = new Date(); 
+      requested = d.getTime();
     }
 }
 
@@ -149,15 +152,26 @@ function handleClick(element,type){
     }
 
 }
+let minutes = 0;
+let minusSec = 0;
 function calcRemaining(){
     Incorrect = 0;
+    d = new Date();
     for (let i = 0; i < pieceArray.length; i++) {
         if (pieceArray[i][1] != i) {
             Incorrect++;
         }
     }
     let puzzlie = document.getElementById("txt");
-    puzzlie.innerHTML = `Remaining: ${Incorrect}`;
+    let seconds = (Math.round((d.getTime()-requested)/1000))-minusSec
+    
+    if (seconds==60){
+        minutes++;
+        minusSec = minusSec + 60
+    }
+    let secString = seconds.toString()
+    if (secString.length == 1){secString="0"+secString}
+    puzzlie.innerHTML = `Remaining: ${Incorrect}<br> Time: ${minutes}:${secString}`;
     if(Incorrect==0){
         let r = document.getElementById("remove");
         let page = document.getElementById("webpage");
@@ -263,6 +277,7 @@ let mousePressed = false;
 async function moveImage(){
     while(true){
         await sleep(50);
+        calcRemaining();
         let element = document.getElementsByClassName("preview")[0]
         if(element.matches(":hover")){
             imgBool = true;
@@ -270,7 +285,7 @@ async function moveImage(){
             imgBool = false;
         }
     }
-
+   
 }
 onmousedown = function() { 
     mousePressed = true;
